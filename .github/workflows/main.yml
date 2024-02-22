@@ -52,7 +52,7 @@ jobs:
         working-directory: .
 
       - name: Push image
-        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/crawler-api-image:latest
+        run: docker push ${{ secrets.GCP_PROJECT_ID }}/crawler-api-image:latest
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
