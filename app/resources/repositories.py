@@ -26,13 +26,13 @@ class ICrawlingProcessesRepository(ABC):
 
 
 class FirestoreCrawlingProcessesRepository(ICrawlingProcessesRepository):
-    collection_name = "crawling_processes"
+    collection_name = "crawling-processes"
 
     def __init__(self):
         self._client = firestore.AsyncClient()
         self._collection = self._client.collection(self.collection_name)
     
     async def add(self, data: CrawlingProcess) -> None:
-        doc_ref = self._client.collection("crawling_processes").document(document_id=data.id)
+        doc_ref = self._collection.document(document_id=data.id)
         await doc_ref.set(document_data=data.model_dump(exclude={"id"}))
         return doc_ref.id

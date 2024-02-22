@@ -11,7 +11,7 @@ class IQueue(ABC):
 
 
 class PubsubTopics(StrEnum):
-    CRAWLING_STARTED = "crawling_started"
+    CRAWLING_STARTED = "crawling-started"
 
 
 class PubSubQueue(IQueue):
