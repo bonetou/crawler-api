@@ -48,11 +48,11 @@ jobs:
         run: gcloud auth configure-docker ${{ env.GCP_REGION }}-docker.pkg.dev --quiet
 
       - name: Build image
-        run: docker build . --file ./Dockerfile --tag ${{ secrets.GCP_PROJECT_ID }}/crawler-api-image:${{ github.sha }}
+        run: docker build . --file ./Dockerfile --tag ${{ secrets.GCP_PROJECT_ID }}/crawler-api-image:latest
         working-directory: .
 
       - name: Push image
-        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/crawler-api-image:${{ github.sha }}
+        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/crawler-api-image:latest
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
