@@ -1,3 +1,6 @@
+run-tests:
+	poetry run pytest tests/ -v
+
 build-emulators:
 	@docker build \
 		--tag google_cloud:emulators \

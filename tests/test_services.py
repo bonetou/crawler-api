@@ -1,26 +1,40 @@
 import pytest
 from unittest.mock import Mock
-from app.services import CrawlService
-from google.cloud import firestore
+from app.resources.queues import IQueue, PubsubTopics
+from app.services import CrawlingService
+from app.resources.repositories import CrawlingStatus, ICrawlingProcessesRepository
+
+
+class FakeRepository(ICrawlingProcessesRepository):
+    def __init__(self):
+        self.data = []
+
+    async def add(self, data):
+        self.data.append(data)
+        return data.id
+
+
+class FakeQueue(IQueue):
+    def __init__(self):
+        self.data = []
+
+    def publish(self, topic_name, data):
+        self.data.append((topic_name, data))
 
 
 @pytest.mark.asyncio
 async def test_should_start_crawling():
-    queue_mock = Mock(topic_path=Mock(return_value="projects/gcp-project-id/topics/crawling_started"))
-    service = CrawlService(queue=queue_mock)
-    process = await service.start("http://example.com")
+    fake_queue = FakeQueue()
+    fake_repository = FakeRepository()
+    service = CrawlingService(queue=fake_queue, db=fake_repository)
+    initial_url = "http://example.com"
+    process = await service.start(initial_url)
     dict_process = process.model_dump()
+
     assert dict_process["id"]
-    assert dict_process["initial_url"] == "http://example.com"
-    assert dict_process["status"] == "pending"
+    assert dict_process["initial_url"] == initial_url
+    assert dict_process["status"] == CrawlingStatus.pending
     assert dict_process["found_urls"] == []
 
-    db = firestore.AsyncClient()
-    doc_ref = db.collection("crawling_processes").document(process.id)
-    doc = await doc_ref.get()
-    assert doc.to_dict() == dict_process
-
-    queue_mock.publish.assert_called_once_with(
-        topic="projects/gcp-project-id/topics/crawling_started",
-        data=process.model_dump_json().encode("utf-8"),
-    )
+    assert fake_repository.data == [process]
+    assert fake_queue.data == [(PubsubTopics.CRAWLING_STARTED, dict_process)]

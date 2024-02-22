@@ -1,5 +1,5 @@
 from fastapi import Depends, FastAPI
-from app.services import CrawlService
+from app.services import CrawlingService
 import pydantic
 
 
@@ -10,9 +10,9 @@ class CreateCrawlRequest(pydantic.BaseModel):
 
 
 def create_crawl_service():
-    return CrawlService()
+    return CrawlingService()
 
 
 @app.post("/crawl")
-async def crawl(request: CreateCrawlRequest, service: CrawlService = Depends(create_crawl_service)):
+async def crawl(request: CreateCrawlRequest, service: CrawlingService = Depends(create_crawl_service)):
     return await service.start(request.initial_url)
