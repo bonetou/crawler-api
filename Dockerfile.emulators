@@ -1,0 +1,8 @@
+FROM google/cloud-sdk:emulators
+
+RUN rm -rf /google-cloud-sdk/.install/.backup && \
+    rm -rf $(find google-cloud-sdk/ -regex ".*/__pycache__") && \
+    rm -rf /google-cloud-sdk/bin/anthoscli
+
+CMD gcloud beta emulators firestore start --host-port=0.0.0.0:8085 --log-http & \
+    gcloud beta emulators pubsub start --host-port=0.0.0.0:8086 --log-http
