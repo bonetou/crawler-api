@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import Mock
 from app.resources.queues import IQueue, PubsubTopics
 from app.services import CrawlingService
 from app.resources.repositories import CrawlingStatus, ICrawlingProcessesRepository

@@ -15,4 +15,4 @@ def create_crawl_service():
 
 @app.post("/crawl")
 async def crawl(request: CreateCrawlRequest, service: CrawlingService = Depends(create_crawl_service)):
-    return await service.start(request.initial_url)
+    return await service.start(str(request.initial_url))
