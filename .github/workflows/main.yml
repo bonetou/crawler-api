@@ -60,7 +60,7 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           flags: |
-            --allow-unauthenticated
+            --args=-allow-unauthenticated
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           metadata: service.yaml
