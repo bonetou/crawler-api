@@ -44,17 +44,20 @@ jobs:
       - name: Build and push Docker image
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest .
           docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
 
+      - name: Activate service account
+        run: |
+          gcloud auth activate-service-account --key-file=$GCP_SA_KEY
+
       - name: Set up permissions for deploy Cloud Run
         run: |
-          gcloud projects add-iam-policy-binding $GCP_PROJECT_ID \
-            --member=serviceAccount:$
-            --role=roles/run.admin
-            
+          gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker crawler-api
+
       - name: Deploy Cloud Run
         run: |
           gcloud run deploy crawler-api \
