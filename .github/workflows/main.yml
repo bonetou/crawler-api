@@ -52,5 +52,5 @@ jobs:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT }}
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: crawler-api
+          service: crawler_api
           image: us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
