@@ -49,9 +49,6 @@ jobs:
           docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest .
           docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
 
-      - name: Set up IAM
-        run: |
-          gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker crawler-api
 
       - name: Deploy Cloud Run
         run: |
@@ -60,3 +57,7 @@ jobs:
             --platform managed \
             --region $GCP_REGION \
             --allow-unauthenticated
+
+      - name: Set up IAM
+        run: |
+          gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker crawler-api
