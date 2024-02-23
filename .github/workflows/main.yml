@@ -59,7 +59,6 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          flags: --ingress=all --allow-unauthenticated --platform=managed
-          service: ${{ env.SERVICE }}
-          region: ${{ env.REGION }}
-          metadata: service.yaml
+          service: "${{ env.SERVICE }}"
+          image: "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
+          flags: '--platform=managed --allow-unauthenticated'
