@@ -33,29 +33,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Google Cloud SDK
-        uses: 'google-github-actions/auth@v2'
+        uses: google-github-actions/auth@v2
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: ${{ secrets.GCP_PROJECT }}
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-      
-      - name: Google cloud activate service account with sa key in env
-        run: gcloud auth activate-service-account --key-file=<(echo $GCP_SA_KEY)
-
+    
       - name: Build and push Docker image
         env:
-          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT }}
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest .
           docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
-
-      - name: Set up permissions for deploy Cloud Run
-        run: |
-          gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker crawler-api
 
       - name: Deploy Cloud Run
         run: |
