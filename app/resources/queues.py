@@ -17,7 +17,7 @@ class PubsubTopics(StrEnum):
 class PubSubQueue(IQueue):
     def __init__(self):
         self._client = pubsub.PublisherClient()
-        self._project_id = "gcp-project-id"
+        self._project_id = "criscon"
 
     def publish(self, topic_name: str, data: dict):
         topic_path = self._client.topic_path(self._project_id, topic_name)

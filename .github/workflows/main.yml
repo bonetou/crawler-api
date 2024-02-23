@@ -61,4 +61,4 @@ jobs:
         with:
           service: "${{ env.SERVICE }}"
           image: "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
-          flags: '--platform=managed --allow-unauthenticated'
+          flags: '--allow-unauthenticated'
