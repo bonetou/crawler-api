@@ -47,21 +47,12 @@ jobs:
       #     docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest .
       #     docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
 
-      - name: Set permissions
-        run: |
-          gcloud beta run services add-iam-policy-binding \
-          --region=us-central1 \
-          --member=service-282801450198@serverless-robot-prod.iam.gserviceaccount.com \
-          --role=roles/storage.objectViewer \
-          crawler-api
-
       - name: Deploy Cloud Run
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-        run: |
-          gcloud run deploy crawler-api \
-            --image=us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest \
-            --platform=managed \
-            --region=us-central1 \
-            --allow-unauthenticated
-
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: crawler-api
+          image: us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
+          flags: --allow-unauthenticated
+          revision_traffic: 'latest-revision=100'
