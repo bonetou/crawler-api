@@ -59,9 +59,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
+          flags: --allow-unauthenticated
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
           metadata: service.yaml
-  
-      - name: Show Output
-        run: echo ${{ steps.deploy.outputs.url }}
