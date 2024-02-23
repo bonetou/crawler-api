@@ -49,10 +49,19 @@ jobs:
           docker build -t "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}" ./
           docker push "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
 
-      - name: Deploy Cloud Run
-        env:
-          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT }}
-        uses: google-github-actions/deploy-cloudrun@v2
+          - name: Create Service declearation   
+          run: |-
+            export IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+            export SERVICE="${{ env.SERVICE }}"
+            envsubst < ./workflows/deploy-cloudrun/service.template.yaml > service.yaml
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
         with:
           service: ${{ env.SERVICE }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+          region: ${{ env.REGION }}
+          metadata: service.yaml
+  
+      - name: Show Output
+        run: echo ${{ steps.deploy.outputs.url }}
