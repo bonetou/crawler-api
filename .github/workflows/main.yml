@@ -54,4 +54,3 @@ jobs:
         with:
           service: crawler-api
           image: us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
-          tag_traffic: 'latest=100'
