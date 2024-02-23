@@ -51,7 +51,7 @@ jobs:
 
       - name: Create Service declearation   
         run: |
-          export IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          export IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
           export SERVICE="${{ env.SERVICE }}"
           envsubst < ./service.template.yaml > service.yaml
 
