@@ -49,15 +49,10 @@ jobs:
           docker build -t us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest .
           docker push us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.7.4
-
-      - name: Deploy Cloud Run service with Terraform
+      - name: Deploy Cloud Run
         run: |
-          terraform -chdir=terraform init
-          terraform -chdir=terraform apply -auto-approve \
-            -var="cloud_run_image=us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/images/crawler_api:latest" \
-            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-            -var="region=${{ env.GCP_REGION }}" \
+          gcloud run deploy crawler-api \
+            --image us-central1-docker.pkg.dev/$GCP_PROJECT_ID/images/crawler_api:latest \
+            --platform managed \
+            --region $GCP_REGION \
+            --allow-unauthenticated

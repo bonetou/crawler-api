@@ -4,8 +4,9 @@ variable "project_id" {
 
 variable "region" {
   description = "The region in which to deploy Cloud Run service"
+  default = "us-central1"
 }
 
-variable "cloud_run_image" {
-  description = "The image to deploy to Cloud Run"
+variable "cloud_run_url" {
+  description = "The URL of the Cloud Run service"
 }
