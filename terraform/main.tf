@@ -13,6 +13,10 @@ resource "google_cloud_run_service" "crawler_api" {
       }
     }
   }
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
 }
 
 resource "google_pubsub_topic" "crawling_started_topic" {
