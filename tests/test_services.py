@@ -61,8 +61,8 @@ async def test_should_extract_urls_when_processing():
         <html><a href='http://example.com/link1'></a><a href='http://example.com/link2'></a></html>'''
     )
     service = CrawlingService(queue=fake_queue, db=fake_repository, html_service=fake_html_service)
-    current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
-    process = await service.process(current_process)
+    event = created_crawling_process_event(data={'id': '123', 'initial_url': 'http://example.com'})
+    process = await service.process(event)
     
     assert process.id == "123"
     assert process.status == CrawlingStatus.COMPLETED
@@ -76,8 +76,8 @@ async def test_should_return_empty_list_if_no_links():
     fake_repository = FakeRepository()
     fake_html_service = FakeHtmlService('<html></html>')
     service = CrawlingService(queue=fake_queue, db=fake_repository, html_service=fake_html_service)
-    current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
-    process = await service.process(current_process)
+    event = created_crawling_process_event(data={'id': '123', 'initial_url': 'http://example.com'})
+    process = await service.process(event)
     assert process.found_urls == []
 
 
@@ -87,8 +87,8 @@ async def test_should_not_return_same_url():
     fake_repository = FakeRepository()
     fake_html_service = FakeHtmlService('<html><a href="http://example.com"></a></html>')
     service = CrawlingService(queue=fake_queue, db=fake_repository, html_service=fake_html_service)
-    current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
-    process = await service.process(current_process)
+    event = created_crawling_process_event(data={'id': '123', 'initial_url': 'http://example.com'})
+    process = await service.process(event)
     assert process.found_urls == []
 
 
@@ -98,6 +98,6 @@ async def test_should_not_return_external_links():
     fake_repository = FakeRepository()
     fake_html_service = FakeHtmlService('<html><a href="http://external.com"></a></html>')
     service = CrawlingService(queue=fake_queue, db=fake_repository, html_service=fake_html_service)
-    current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
-    process = await service.process(current_process)
+    event = created_crawling_process_event(data={'id': '123', 'initial_url': 'http://example.com'})
+    process = await service.process(event)
     assert process.found_urls == []

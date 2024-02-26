@@ -15,6 +15,7 @@ app = FastAPI()
 class CreateCrawlRequest(pydantic.BaseModel):
     initial_url: pydantic.AnyUrl
 
+
 class PubsubMessage(pydantic.BaseModel):
     data: str
 
@@ -22,7 +23,7 @@ class PubsubMessage(pydantic.BaseModel):
 class PubSubRequest(pydantic.BaseModel):
     message: PubsubMessage
 
-    def decode_data(self):
+    def decode_data(self) -> dict:
         return json.loads(base64.b64decode(self.message.data).decode("utf-8"))
 
 
@@ -59,5 +60,5 @@ async def get_crawl(id: str, service: CrawlingService = Depends(create_crawl_ser
 
 @app.post("/internal/process")
 async def process(request: PubSubRequest, service: CrawlingService = Depends(create_crawl_service)):
-    process = await service.process(CrawlingProcess(**request.decode_data()))
+    process = await service.process(event=request.decode_data())
     return process

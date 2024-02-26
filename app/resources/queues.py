@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from enum import StrEnum
-from typing import Literal
 from google.cloud import pubsub
 import json
 import pydantic
@@ -20,8 +19,13 @@ class CreatedCrawlingProcessData(pydantic.BaseModel):
     initial_url: str
 
 
-def created_crawling_process_event(data: CreatedCrawlingProcessData) -> Event:
-    return Event(name=EventNames.CRAWLING_STARTED, data=data)
+class CreatedCrawlingProcessEvent(Event):
+    name: EventNames = EventNames.CRAWLING_STARTED
+    data: CreatedCrawlingProcessData
+
+
+def created_crawling_process_event(data: CreatedCrawlingProcessData) -> CreatedCrawlingProcessEvent:
+    return CreatedCrawlingProcessEvent(data=data)
 
 
 class IQueue(ABC):

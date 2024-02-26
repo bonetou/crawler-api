@@ -1,6 +1,6 @@
 import aiohttp
 from bs4 import BeautifulSoup
-from app.resources.queues import IQueue, created_crawling_process_event
+from app.resources.queues import CreatedCrawlingProcessEvent, IQueue, created_crawling_process_event
 from app.resources.repositories import (
     CrawlingProcess,
     CrawlingStatus,
@@ -30,13 +30,14 @@ class CrawlingService:
         self._queue.publish(event=created_crawling_process_event(data={"id": pending_crawling_process.id, "initial_url": url}))
         return pending_crawling_process
 
-    async def process(self, crawling_process: CrawlingProcess) -> CrawlingProcess:
-        html = await self._html_service.get_html(url=crawling_process.initial_url)
-        links = self._get_links(html, url=crawling_process.initial_url)
-        crawling_process.status = CrawlingStatus.COMPLETED
-        crawling_process.found_urls = links
-        await self._db.update(data=crawling_process)
-        return crawling_process
+    async def process(self, event: CreatedCrawlingProcessEvent) -> CrawlingProcess:
+        process = await self._db.get(id=event.data.id)
+        html = await self._html_service.get_html(url=event.data.initial_url)
+        links = self._get_links(html, url=event.data.initial_url)
+        process.found_urls = links
+        process.status = CrawlingStatus.COMPLETED
+        await self._db.update(data=process)
+        return process
 
     def _get_links(self, html: str, url: str) -> list:
         soup = BeautifulSoup(html, 'html.parser')
