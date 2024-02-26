@@ -1,6 +1,9 @@
 run-tests:
 	poetry run pytest tests/ -v
 
+run-app:
+	poetry run uvicorn app.main:app --port 8083 --reload
+
 build-emulators:
 	@docker build \
 		--tag google_cloud:emulators \

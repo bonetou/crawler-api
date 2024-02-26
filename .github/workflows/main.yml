@@ -10,6 +10,7 @@ env:
   REPOSITORY: images
   SERVICE: crawler-api
   REGION: us-central1
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -31,6 +32,7 @@ jobs:
         run: poetry run pytest tests/
 
   deploy:
+    needs: tests
     runs-on: ubuntu-latest
 
     steps:

@@ -1,6 +1,7 @@
 from app.main import app, create_crawl_service
 from fastapi.testclient import TestClient
 import pytest
+from app.resources.repositories import CrawlingStatus
 
 from app.services import CrawlingProcess
 
@@ -9,7 +10,7 @@ class FakeCrawlService:
         return CrawlingProcess(
             id="fake-id",
             initial_url=str(initial_url),
-            status="pending",
+            status=CrawlingStatus.CREATED,
         )
 
 def fake_crawl_service():
@@ -26,7 +27,7 @@ async def test_should_return_200():
     json_response = response.json()
     assert json_response["id"] == "fake-id"
     assert json_response["initial_url"] == "http://example.com/"
-    assert json_response["status"] == "pending"
+    assert json_response["status"] == "created"
     assert json_response["found_urls"] == []
 
 
