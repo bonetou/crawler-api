@@ -79,3 +79,25 @@ async def test_should_return_empty_list_if_no_links():
     current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
     process = await service.process(current_process)
     assert process.found_urls == []
+
+
+@pytest.mark.asyncio
+async def test_should_not_return_same_url():
+    fake_queue = FakeQueue()
+    fake_repository = FakeRepository()
+    fake_html_service = FakeHtmlService('<html><a href="http://example.com"></a></html>')
+    service = CrawlingService(queue=fake_queue, db=fake_repository, html_service=fake_html_service)
+    current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
+    process = await service.process(current_process)
+    assert process.found_urls == []
+
+
+@pytest.mark.asyncio
+async def test_should_not_return_external_links():
+    fake_queue = FakeQueue()
+    fake_repository = FakeRepository()
+    fake_html_service = FakeHtmlService('<html><a href="http://external.com"></a></html>')
+    service = CrawlingService(queue=fake_queue, db=fake_repository, html_service=fake_html_service)
+    current_process = CrawlingProcess(id="123", initial_url="http://example.com", status=CrawlingStatus.IN_PROGRESS)
+    process = await service.process(current_process)
+    assert process.found_urls == []
