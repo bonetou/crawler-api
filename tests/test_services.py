@@ -1,5 +1,5 @@
 import pytest
-from app.resources.queues import IQueue, PubsubTopics
+from app.resources.queues import IQueue, EventNames, created_crawling_process_event
 from app.services import CrawlingService, HtmlService
 from app.resources.repositories import CrawlingProcess, CrawlingStatus, ICrawlingProcessesRepository
 
@@ -31,8 +31,8 @@ class FakeQueue(IQueue):
     def __init__(self):
         self.data = []
 
-    def publish(self, topic_name, data):
-        self.data.append((topic_name, data))
+    def publish(self, event):
+        self.data.append((event))
 
 
 @pytest.mark.asyncio
@@ -50,7 +50,7 @@ async def test_should_start_crawling():
     assert process.found_urls == []
 
     assert fake_repository.data == [process]
-    assert fake_queue.data == [(PubsubTopics.CRAWLING_STARTED, process.model_dump())]
+    assert fake_queue.data == [created_crawling_process_event(data={"id": process.id, "initial_url": initial_url})]
 
 
 @pytest.mark.asyncio

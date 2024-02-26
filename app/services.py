@@ -1,6 +1,6 @@
 import aiohttp
 from bs4 import BeautifulSoup
-from app.resources.queues import IQueue, PubsubTopics
+from app.resources.queues import IQueue, created_crawling_process_event
 from app.resources.repositories import (
     CrawlingProcess,
     CrawlingStatus,
@@ -27,7 +27,7 @@ class CrawlingService:
     async def start(self, url: str) -> CrawlingProcess:
         pending_crawling_process = CrawlingProcess(initial_url=url, status=CrawlingStatus.IN_PROGRESS)
         await self._db.add(data=pending_crawling_process)
-        self._queue.publish(topic_name=PubsubTopics.CRAWLING_STARTED, data=pending_crawling_process.model_dump())
+        self._queue.publish(event=created_crawling_process_event(data={"id": pending_crawling_process.id, "initial_url": url}))
         return pending_crawling_process
 
     async def process(self, crawling_process: CrawlingProcess) -> CrawlingProcess:
