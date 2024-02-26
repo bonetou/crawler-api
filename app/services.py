@@ -21,6 +21,9 @@ class CrawlingService:
         self._queue = queue
         self._html_service = html_service
 
+    async def get(self, id: str) -> CrawlingProcess:
+        return await self._db.get(id=id)
+
     async def start(self, url: str) -> CrawlingProcess:
         pending_crawling_process = CrawlingProcess(initial_url=url, status=CrawlingStatus.IN_PROGRESS)
         await self._db.add(data=pending_crawling_process)

@@ -10,6 +10,7 @@ class CrawlingStatus(StrEnum):
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
 
+
 class CrawlingProcess(pydantic.BaseModel):
     id: str = pydantic.Field(default_factory=lambda: str(uuid4()), frozen=True)
     initial_url: str
@@ -31,6 +32,10 @@ class ICrawlingProcessesRepository(ABC):
         pass
 
 
+class ProcessNotFoundError(Exception):
+    pass
+
+
 class FirestoreCrawlingProcessesRepository(ICrawlingProcessesRepository):
     collection_name = "crawling-processes"
 
@@ -41,6 +46,8 @@ class FirestoreCrawlingProcessesRepository(ICrawlingProcessesRepository):
     async def get(self, id: str) -> CrawlingProcess:
         doc_ref = self._collection.document(document_id=id)
         doc = await doc_ref.get()
+        if not doc.exists:
+            raise ProcessNotFoundError(f"Process with id {id} not found")
         return CrawlingProcess(**doc.to_dict(), id=doc.id)
 
     async def add(self, data: CrawlingProcess) -> None:
