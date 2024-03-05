@@ -24,7 +24,9 @@ class CreatedCrawlingProcessEvent(Event):
     data: CreatedCrawlingProcessData
 
 
-def created_crawling_process_event(data: CreatedCrawlingProcessData) -> CreatedCrawlingProcessEvent:
+def created_crawling_process_event(
+    data: CreatedCrawlingProcessData,
+) -> CreatedCrawlingProcessEvent:
     return CreatedCrawlingProcessEvent(data=data)
 
 
@@ -41,4 +43,6 @@ class PubSubQueue(IQueue):
 
     def publish(self, event: Event):
         topic_path = self._client.topic_path(project=self._project_id, topic=event.name)
-        self._client.publish(topic=topic_path, data=json.dumps(event.data).encode('utf-8'))
+        self._client.publish(
+            topic=topic_path, data=json.dumps(event.data).encode("utf-8")
+        )

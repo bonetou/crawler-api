@@ -42,7 +42,7 @@ class FirestoreCrawlingProcessesRepository(ICrawlingProcessesRepository):
     def __init__(self):
         self._client = firestore.AsyncClient()
         self._collection = self._client.collection(self.collection_name)
-    
+
     async def get(self, id: str) -> CrawlingProcess:
         doc_ref = self._collection.document(document_id=id)
         doc = await doc_ref.get()

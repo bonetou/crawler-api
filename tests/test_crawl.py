@@ -5,17 +5,18 @@ from app.resources.repositories import CrawlingStatus, ProcessNotFoundError
 
 from app.services import CrawlingProcess
 
+
 class FakeCrawlService:
     def __init__(self, raise_404: bool = False) -> None:
         self.raise_404 = raise_404
-    
+
     async def start(self, initial_url):
         return CrawlingProcess(
             id="fake-id",
             initial_url=str(initial_url),
             status=CrawlingStatus.CREATED,
         )
-    
+
     async def get(self, id):
         if self.raise_404:
             raise ProcessNotFoundError
@@ -24,7 +25,6 @@ class FakeCrawlService:
             initial_url="http://example.com/",
             status=CrawlingStatus.CREATED,
         )
-        
 
 
 def fake_crawl_service():
@@ -68,6 +68,7 @@ async def test_should_get_crawl():
 async def test_should_return_404_if_crawl_not_found():
     def fake_crawl_service():
         return FakeCrawlService(raise_404=True)
+
     app.dependency_overrides[create_crawl_service] = fake_crawl_service
     response = client.get("/crawl/invalid-id")
     assert response.status_code == 404

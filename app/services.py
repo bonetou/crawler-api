@@ -1,6 +1,10 @@
 import aiohttp
 from bs4 import BeautifulSoup
-from app.resources.queues import CreatedCrawlingProcessEvent, IQueue, created_crawling_process_event
+from app.resources.queues import (
+    CreatedCrawlingProcessEvent,
+    IQueue,
+    created_crawling_process_event,
+)
 from app.resources.repositories import (
     CrawlingProcess,
     CrawlingStatus,
@@ -16,7 +20,9 @@ class HtmlService:
 
 
 class CrawlingService:
-    def __init__(self, db: ICrawlingProcessesRepository, queue: IQueue, html_service: HtmlService):
+    def __init__(
+        self, db: ICrawlingProcessesRepository, queue: IQueue, html_service: HtmlService
+    ):
         self._db = db
         self._queue = queue
         self._html_service = html_service
@@ -25,9 +31,15 @@ class CrawlingService:
         return await self._db.get(id=id)
 
     async def start(self, url: str) -> CrawlingProcess:
-        pending_crawling_process = CrawlingProcess(initial_url=url, status=CrawlingStatus.IN_PROGRESS)
+        pending_crawling_process = CrawlingProcess(
+            initial_url=url, status=CrawlingStatus.IN_PROGRESS
+        )
         await self._db.add(data=pending_crawling_process)
-        self._queue.publish(event=created_crawling_process_event(data={"id": pending_crawling_process.id, "initial_url": url}))
+        self._queue.publish(
+            event=created_crawling_process_event(
+                data={"id": pending_crawling_process.id, "initial_url": url}
+            )
+        )
         return pending_crawling_process
 
     async def process(self, event: CreatedCrawlingProcessEvent) -> CrawlingProcess:
@@ -40,8 +52,8 @@ class CrawlingService:
         return process
 
     def _get_links(self, html: str, url: str) -> list:
-        soup = BeautifulSoup(html, 'html.parser')
-        links = [link.get('href') for link in soup.find_all('a')]
+        soup = BeautifulSoup(html, "html.parser")
+        links = [link.get("href") for link in soup.find_all("a")]
         return [link for link in links if self._is_link_valid(link=link, url=url)]
 
     def _is_link_valid(self, link: str, url: str) -> bool:

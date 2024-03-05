@@ -2,7 +2,10 @@ import base64
 import json
 from fastapi import Depends, FastAPI, status, responses
 from app.resources.queues import CreatedCrawlingProcessEvent, PubSubQueue
-from app.resources.repositories import CrawlingProcess, FirestoreCrawlingProcessesRepository, ProcessNotFoundError
+from app.resources.repositories import (
+    FirestoreCrawlingProcessesRepository,
+    ProcessNotFoundError,
+)
 from app.services import CrawlingService, HtmlService
 import pydantic
 import logging
@@ -36,7 +39,10 @@ def create_crawl_service():
 
 
 @app.post("/crawl")
-async def crawl(request: CreateCrawlRequest, service: CrawlingService = Depends(create_crawl_service)):
+async def crawl(
+    request: CreateCrawlRequest,
+    service: CrawlingService = Depends(create_crawl_service),
+):
     return await service.start(str(request.initial_url))
 
 
@@ -59,6 +65,10 @@ async def get_crawl(id: str, service: CrawlingService = Depends(create_crawl_ser
 
 
 @app.post("/internal/process")
-async def process(request: PubSubRequest, service: CrawlingService = Depends(create_crawl_service)):
-    process = await service.process(event=CreatedCrawlingProcessEvent(data=request.decode_data()))
+async def process(
+    request: PubSubRequest, service: CrawlingService = Depends(create_crawl_service)
+):
+    process = await service.process(
+        event=CreatedCrawlingProcessEvent(data=request.decode_data())
+    )
     return process
