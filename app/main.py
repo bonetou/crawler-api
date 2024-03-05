@@ -69,7 +69,7 @@ async def get_crawl(id: str, service: CrawlingService = Depends(create_crawl_ser
 async def process(
     request: PubSubRequest, service: CrawlingService = Depends(create_crawl_service)
 ):
-    process = await service.process(
+    process = await service.extract_links(
         event=CreatedCrawlingProcessEvent(data=request.decode_data())
     )
     return process
