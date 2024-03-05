@@ -60,4 +60,4 @@ class CrawlingService:
         return [link for link in links if self._is_link_valid(link=link, url=url)]
 
     def _is_link_valid(self, link: str, url: str) -> bool:
-        return link != url and link.startswith(url)
+        return link != url and url in link
