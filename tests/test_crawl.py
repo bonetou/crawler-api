@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 import pytest
 from app.resources.repositories import CrawlingStatus, ProcessNotFoundError
 
-from app.services import CrawlingProcess
+from app.services.crawling_service import CrawlingProcess
 
 
 class FakeCrawlService:

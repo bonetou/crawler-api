@@ -1,6 +1,7 @@
 import pytest
 from app.resources.queues import IQueue, created_crawling_process_event
-from app.services import CrawlingService, HtmlService
+from app.services.crawling_service import CrawlingService
+from app.services.html_service import HtmlService
 from app.resources.repositories import (
     CrawlingProcess,
     CrawlingStatus,
@@ -87,7 +88,7 @@ async def test_should_extract_urls_when_processing(repository_with_process):
     event = created_crawling_process_event(
         data={"id": "123", "initial_url": "http://example.com"}
     )
-    process = await service.process(event)
+    process = await service.extract_links(event)
 
     assert process.id == "123"
     assert process.status == CrawlingStatus.COMPLETED
@@ -107,7 +108,7 @@ async def test_should_return_empty_list_if_no_links(repository_with_process):
     event = created_crawling_process_event(
         data={"id": "123", "initial_url": "http://example.com"}
     )
-    process = await service.process(event)
+    process = await service.extract_links(event)
     assert process.found_urls == []
 
 
@@ -123,7 +124,7 @@ async def test_should_not_return_same_url(repository_with_process):
     event = created_crawling_process_event(
         data={"id": "123", "initial_url": "http://example.com"}
     )
-    process = await service.process(event)
+    process = await service.extract_links(event)
     assert process.found_urls == []
 
 
@@ -139,5 +140,5 @@ async def test_should_not_return_external_links(repository_with_process):
     event = created_crawling_process_event(
         data={"id": "123", "initial_url": "http://example.com"}
     )
-    process = await service.process(event)
+    process = await service.extract_links(event)
     assert process.found_urls == []

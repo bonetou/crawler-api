@@ -1,4 +1,3 @@
-import aiohttp
 from bs4 import BeautifulSoup
 from app.resources.queues import (
     CreatedCrawlingProcessData,
@@ -11,18 +10,16 @@ from app.resources.repositories import (
     CrawlingStatus,
     ICrawlingProcessesRepository,
 )
-
-
-class HtmlService:
-    async def get_html(self, url: str) -> str:
-        async with aiohttp.ClientSession() as session:
-            response = await session.get(url)
-            return await response.text()
+from urllib.parse import urlparse
+from app.services.html_service import IHtmlService
 
 
 class CrawlingService:
     def __init__(
-        self, db: ICrawlingProcessesRepository, queue: IQueue, html_service: HtmlService
+        self,
+        db: ICrawlingProcessesRepository,
+        queue: IQueue,
+        html_service: IHtmlService,
     ):
         self._db = db
         self._queue = queue
@@ -45,7 +42,9 @@ class CrawlingService:
         )
         return pending_crawling_process
 
-    async def process(self, event: CreatedCrawlingProcessEvent) -> CrawlingProcess:
+    async def extract_links(
+        self, event: CreatedCrawlingProcessEvent
+    ) -> CrawlingProcess:
         process = await self._db.get(id=event.data.id)
         html = await self._html_service.get_html(url=event.data.initial_url)
         links = self._get_links(html, url=event.data.initial_url)
@@ -60,4 +59,4 @@ class CrawlingService:
         return [link for link in links if self._is_link_valid(link=link, url=url)]
 
     def _is_link_valid(self, link: str, url: str) -> bool:
-        return link != url and url in link
+        return link != url and urlparse(link).netloc == urlparse(url).netloc

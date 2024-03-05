@@ -6,7 +6,8 @@ from app.resources.repositories import (
     FirestoreCrawlingProcessesRepository,
     ProcessNotFoundError,
 )
-from app.services import CrawlingService, HtmlService
+from app.services.crawling_service import CrawlingService
+from app.services.html_service import HtmlService
 import pydantic
 import logging
 
