@@ -11,7 +11,7 @@ class EventNames(StrEnum):
 
 class Event(pydantic.BaseModel):
     name: EventNames
-    data: dict
+    data: pydantic.BaseModel
 
 
 class CreatedCrawlingProcessData(pydantic.BaseModel):
@@ -20,7 +20,7 @@ class CreatedCrawlingProcessData(pydantic.BaseModel):
 
 
 class CreatedCrawlingProcessEvent(Event):
-    name: EventNames = EventNames.CRAWLING_STARTED
+    name: EventNames = pydantic.Field(default=EventNames.CRAWLING_STARTED)
     data: CreatedCrawlingProcessData
 
 
@@ -44,5 +44,5 @@ class PubSubQueue(IQueue):
     def publish(self, event: Event):
         topic_path = self._client.topic_path(project=self._project_id, topic=event.name)
         self._client.publish(
-            topic=topic_path, data=json.dumps(event.data).encode("utf-8")
+            topic=topic_path, data=json.dumps(event.data.model_dump()).encode("utf-8")
         )

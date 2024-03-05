@@ -1,6 +1,7 @@
 import aiohttp
 from bs4 import BeautifulSoup
 from app.resources.queues import (
+    CreatedCrawlingProcessData,
     CreatedCrawlingProcessEvent,
     IQueue,
     created_crawling_process_event,
@@ -37,8 +38,10 @@ class CrawlingService:
         await self._db.add(data=pending_crawling_process)
         self._queue.publish(
             event=created_crawling_process_event(
-                data={"id": pending_crawling_process.id, "initial_url": url}
-            )
+                data=CreatedCrawlingProcessData(
+                    id=pending_crawling_process.id, initial_url=url
+                )
+            ),
         )
         return pending_crawling_process
 
