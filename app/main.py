@@ -1,7 +1,8 @@
 import base64
 import json
 from fastapi import Depends, FastAPI, status, responses
-from app.resources.queues import CreatedCrawlingProcessEvent, PubSubQueue
+from app.resources.events.created_process_event import CreatedProcessEvent
+from app.resources.queues.google_pubsub_queue import PubSubQueue
 from app.resources.repositories import (
     FirestoreCrawlingProcessesRepository,
     ProcessNotFoundError,
@@ -70,6 +71,6 @@ async def process(
     request: PubSubRequest, service: CrawlingService = Depends(create_crawl_service)
 ):
     process = await service.extract_links(
-        event=CreatedCrawlingProcessEvent(data=request.decode_data())
+        event=CreatedProcessEvent(data=request.decode_data())
     )
     return process

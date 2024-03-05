@@ -1,6 +1,6 @@
+import pytest
 from app.main import app, create_crawl_service
 from fastapi.testclient import TestClient
-import pytest
 from app.resources.repositories import CrawlingStatus, ProcessNotFoundError
 
 from app.services.crawling_service import CrawlingProcess

@@ -1,9 +1,8 @@
 from bs4 import BeautifulSoup
-from app.resources.queues import (
-    CreatedCrawlingProcessData,
-    CreatedCrawlingProcessEvent,
+from app.resources.events.event_factory import EventFactory
+from app.resources.events.created_process_event import CreatedProcessData
+from app.resources.queues.base_queue import (
     IQueue,
-    created_crawling_process_event,
 )
 from app.resources.repositories import (
     CrawlingProcess,
@@ -34,17 +33,13 @@ class CrawlingService:
         )
         await self._db.add(data=pending_crawling_process)
         self._queue.publish(
-            event=created_crawling_process_event(
-                data=CreatedCrawlingProcessData(
-                    id=pending_crawling_process.id, initial_url=url
-                )
+            event=EventFactory.process_created(
+                data=CreatedProcessData(id=pending_crawling_process.id, initial_url=url)
             ),
         )
         return pending_crawling_process
 
-    async def extract_links(
-        self, event: CreatedCrawlingProcessEvent
-    ) -> CrawlingProcess:
+    async def extract_links(self, event: CreatedProcessData) -> CrawlingProcess:
         process = await self._db.get(id=event.data.id)
         html = await self._html_service.get_html(url=event.data.initial_url)
         links = self._get_links(html, url=event.data.initial_url)

@@ -1,5 +1,6 @@
 import pytest
-from app.resources.queues import IQueue, created_crawling_process_event
+from app.resources.events.event_factory import EventFactory
+from app.resources.queues.base_queue import IQueue
 from app.services.crawling_service import CrawlingService
 from app.services.html_service import HtmlService
 from app.resources.repositories import (
@@ -71,7 +72,7 @@ async def test_should_start_crawling():
 
     assert fake_repository.data == [process]
     assert fake_queue.data == [
-        created_crawling_process_event(
+        EventFactory.process_created(
             data={"id": process.id, "initial_url": initial_url}
         )
     ]
@@ -85,7 +86,7 @@ async def test_should_extract_urls_when_processing(repository_with_process):
     service = CrawlingService(
         queue=fake_queue, db=repository_with_process, html_service=fake_html_service
     )
-    event = created_crawling_process_event(
+    event = EventFactory.process_created(
         data={"id": "123", "initial_url": "http://example.com"}
     )
     process = await service.extract_links(event)
@@ -105,7 +106,7 @@ async def test_should_return_empty_list_if_no_links(repository_with_process):
     service = CrawlingService(
         queue=fake_queue, db=repository_with_process, html_service=fake_html_service
     )
-    event = created_crawling_process_event(
+    event = EventFactory.process_created(
         data={"id": "123", "initial_url": "http://example.com"}
     )
     process = await service.extract_links(event)
@@ -121,7 +122,7 @@ async def test_should_not_return_same_url(repository_with_process):
     service = CrawlingService(
         queue=fake_queue, db=repository_with_process, html_service=fake_html_service
     )
-    event = created_crawling_process_event(
+    event = EventFactory.process_created(
         data={"id": "123", "initial_url": "http://example.com"}
     )
     process = await service.extract_links(event)
@@ -137,7 +138,7 @@ async def test_should_not_return_external_links(repository_with_process):
     service = CrawlingService(
         queue=fake_queue, db=repository_with_process, html_service=fake_html_service
     )
-    event = created_crawling_process_event(
+    event = EventFactory.process_created(
         data={"id": "123", "initial_url": "http://example.com"}
     )
     process = await service.extract_links(event)
