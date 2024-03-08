@@ -1,5 +1,7 @@
 from app.resources.queues.google_pubsub_queue import PubSubQueue
-from app.resources.repositories import FirestoreCrawlingProcessesRepository
+from app.resources.repositories.firestore_repository import (
+    FirestoreCrawlingProcessesRepository,
+)
 from app.services.crawling_service import CrawlingService
 from app.services.html_service import HtmlService
 

@@ -1,39 +1,9 @@
-from abc import ABC, abstractmethod
-from enum import StrEnum
-from uuid import uuid4
+from app.resources.repositories.base_repository import (
+    ICrawlingProcessesRepository,
+    ProcessNotFoundError,
+)
+from app.resources.model import CrawlingProcess
 from google.cloud import firestore
-import pydantic
-
-
-class CrawlingStatus(StrEnum):
-    CREATED = "created"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-
-
-class CrawlingProcess(pydantic.BaseModel):
-    id: str = pydantic.Field(default_factory=lambda: str(uuid4()), frozen=True)
-    initial_url: str
-    status: CrawlingStatus
-    found_urls: list[str] = []
-
-
-class ICrawlingProcessesRepository(ABC):
-    @abstractmethod
-    async def add(self, data: CrawlingProcess) -> None:
-        pass
-
-    @abstractmethod
-    async def get(self, id: str) -> CrawlingProcess:
-        pass
-
-    @abstractmethod
-    async def update(self, data: CrawlingProcess) -> None:
-        pass
-
-
-class ProcessNotFoundError(Exception):
-    pass
 
 
 class FirestoreCrawlingProcessesRepository(ICrawlingProcessesRepository):

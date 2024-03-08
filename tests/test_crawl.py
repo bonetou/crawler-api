@@ -2,7 +2,8 @@ import pytest
 from app.api.deps import create_crawl_service
 from app.main import app
 from fastapi.testclient import TestClient
-from app.resources.repositories import CrawlingStatus, ProcessNotFoundError
+from app.resources.repositories.base_repository import ProcessNotFoundError
+from app.resources.model import CrawlingStatus
 
 from app.services.crawling_service import CrawlingProcess
 

@@ -4,10 +4,10 @@ from app.resources.events.created_process_event import CreatedProcessData
 from app.resources.queues.base_queue import (
     IQueue,
 )
-from app.resources.repositories import (
+from app.resources.repositories.base_repository import ICrawlingProcessesRepository
+from app.resources.model import (
     CrawlingProcess,
     CrawlingStatus,
-    ICrawlingProcessesRepository,
 )
 from urllib.parse import urlparse
 from app.services.html_service import IHtmlService

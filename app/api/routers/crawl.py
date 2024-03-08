@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status, responses
 from app.api.deps import create_crawl_service
-from app.resources.repositories import (
+from app.resources.repositories.base_repository import (
     ProcessNotFoundError,
 )
 from app.services.crawling_service import CrawlingService

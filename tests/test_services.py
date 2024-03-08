@@ -1,12 +1,12 @@
 import pytest
 from app.resources.events.event_factory import EventFactory
 from app.resources.queues.base_queue import IQueue
+from app.resources.repositories.base_repository import ICrawlingProcessesRepository
 from app.services.crawling_service import CrawlingService
 from app.services.html_service import HtmlService
-from app.resources.repositories import (
+from app.resources.model import (
     CrawlingProcess,
     CrawlingStatus,
-    ICrawlingProcessesRepository,
 )
 
 
