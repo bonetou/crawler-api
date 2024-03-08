@@ -28,7 +28,7 @@ class PubSubRequest(pydantic.BaseModel):
         return json.loads(base64.b64decode(self.message.data).decode("utf-8"))
 
 
-@router.post("/process")
+@router.post("/extract_links")
 async def process(
     request: PubSubRequest, service: CrawlingService = Depends(create_crawl_service)
 ):
