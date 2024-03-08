@@ -7,10 +7,6 @@ variable "region" {
   default = "us-central1"
 }
 
-variable "cloud_run_url" {
-  description = "The URL of the Cloud Run service"
-}
-
 variable "credentials_file" {
   description = "The path to the Google Cloud credentials file"
 }
