@@ -1,3 +1,9 @@
+prepare:
+	poetry shell
+
+install-deps:
+	poetry install
+
 run-tests:
 	poetry run pytest tests/ -v
 
