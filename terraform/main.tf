@@ -28,7 +28,6 @@ resource "google_cloud_run_v2_service" "crawler_api" {
   }
 }
   
-  
 data "google_iam_policy" "noauth" {
   binding {
     role = "roles/run.invoker"
@@ -45,16 +44,15 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-resource "google_pubsub_topic" "crawling_started_topic" {
-  name = "crawling-started"
-}
-
 resource "google_storage_bucket" "crawling_screenshots" {
   name = "crawling-screenshots"
   location = var.region
   force_destroy = true
 }
 
+resource "google_pubsub_topic" "crawling_started_topic" {
+  name = "crawling-started"
+}
 
 resource "google_pubsub_subscription" "crawling_started_subscription" {
   name   = "crawling-started-subscription"
@@ -63,4 +61,17 @@ resource "google_pubsub_subscription" "crawling_started_subscription" {
     push_endpoint = "${google_cloud_run_v2_service.crawler_api.uri}/internal/extract_links"
   }
   depends_on = [ google_pubsub_topic.crawling_started_topic ]
+}
+
+resource "google_pubsub_topic" "crawling_links_extracted_topic" {
+  name = "links-extracted"
+}
+
+resource "google_pubsub_subscription" "crawling_links_extracted_subscription" {
+  name   = "links-extracted-subscription"
+  topic  = google_pubsub_topic.crawling_links_extracted_topic.name
+  push_config {
+    push_endpoint = "${google_cloud_run_v2_service.crawler_api.uri}/internal/screenshot"
+  }
+  depends_on = [ google_pubsub_topic.crawling_links_extracted_topic ]
 }
