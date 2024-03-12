@@ -1,4 +1,4 @@
-from pyppeteer import launch
+import pyppeteer
 from google.cloud import storage
 
 from app.resources.events.links_extracted_event import LinksExtractedEvent
@@ -11,7 +11,7 @@ class ScreenshotService:
         self._repository = repository
 
     async def take_screenshot(self, event: LinksExtractedEvent) -> str:
-        browser = await launch(options={"args": ["--no-sandbox"]})
+        browser = await pyppeteer.launch(headless=True, args=['--no-sandbox'])
 
         page = await browser.newPage()
         screenshots = []
