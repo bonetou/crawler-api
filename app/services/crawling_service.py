@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from app.resources.events.event_factory import EventFactory
 from app.resources.events.created_process_event import CreatedProcessData
+from app.resources.events.links_extracted_event import LinksExtractedData
 from app.resources.queues.base_queue import (
     IQueue,
 )
@@ -44,9 +45,17 @@ class CrawlingService:
         html = await self._html_service.get_html(url=event.data.initial_url)
         links = self._get_links(html, url=event.data.initial_url)
         process.found_urls = links
-        process.status = CrawlingStatus.COMPLETED
         await self._db.update(data=process)
+        self._publish_links_extracted_event(process=process)
         return process
+
+    def _publish_links_extracted_event(self, process: CrawlingProcess):
+        urls = [process.initial_url] + process.found_urls
+        self._queue.publish(
+            event=EventFactory.links_extracted(
+                data=LinksExtractedData(id=process.id, urls=urls)
+            ),
+        )
 
     def _get_links(self, html: str, url: str) -> list:
         soup = BeautifulSoup(html, "html.parser")

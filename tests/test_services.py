@@ -92,7 +92,7 @@ async def test_should_extract_urls_when_processing(repository_with_process):
     process = await service.extract_links(event)
 
     assert process.id == "123"
-    assert process.status == CrawlingStatus.COMPLETED
+    assert process.status == CrawlingStatus.IN_PROGRESS
     assert process.found_urls == [
         "http://example.com/link1",
         "http://example.com/link2",

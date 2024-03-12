@@ -8,7 +8,7 @@ run-tests:
 	poetry run pytest tests/ -v
 
 run-app:
-	poetry run uvicorn app.main:app --port 8083 --reload
+	poetry run uvicorn app.main:app --port 8081 --reload
 
 build-emulators:
 	@docker build \

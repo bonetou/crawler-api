@@ -9,8 +9,14 @@ class CrawlingStatus(StrEnum):
     COMPLETED = "completed"
 
 
+class Screeshot(pydantic.BaseModel):
+    url: str
+    path: str
+
+
 class CrawlingProcess(pydantic.BaseModel):
     id: str = pydantic.Field(default_factory=lambda: str(uuid4()), frozen=True)
     initial_url: str
     status: CrawlingStatus
     found_urls: list[str] = []
+    screenshots: list[Screeshot] = []

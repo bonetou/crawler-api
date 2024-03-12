@@ -1,11 +1,13 @@
 import base64
 import json
 from fastapi import Depends, APIRouter
-from app.api.deps import create_crawl_service
+from app.api.deps import create_crawl_service, screenshot_service
 from app.resources.events.created_process_event import CreatedProcessEvent
 
 from app.services.crawling_service import CrawlingService
 import pydantic
+
+from app.services.screenshot_service import ScreenshotService
 
 router = APIRouter(
     prefix="/internal",
@@ -36,3 +38,12 @@ async def process(
         event=CreatedProcessEvent(data=request.decode_data())
     )
     return process
+
+
+@router.post("/screenshot")
+async def screenshot(
+    request: PubSubRequest, service: ScreenshotService = Depends(screenshot_service)
+):
+    event = request.decode_data()
+    await service.take_screenshot(event=event)
+    return {"status": "ok"}
