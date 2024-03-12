@@ -11,7 +11,7 @@ class ScreenshotService:
         self._repository = repository
 
     async def take_screenshot(self, event: LinksExtractedEvent) -> str:
-        browser = browser = await launch(options={"args": ["--no-sandbox"]})
+        browser = await launch(options={"args": ["--no-sandbox"]})
 
         page = await browser.newPage()
         screenshots = []
