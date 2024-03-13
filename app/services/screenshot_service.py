@@ -20,8 +20,11 @@ class ScreenshotService:
         for url in event.data.urls:
             await page.goto(url)
             screenshot_bytes = await page.screenshot(fullPage=True)
-            screenshot_url = self._save_screenshot(screenshot_bytes, uuid4())
-            screenshots.append(Screeshot(url=url, path=screenshot_url))
+            filename = f"{uuid4()}.png"
+            screenshot_url = self._save_screenshot(
+                screenshot_bytes, filename, event.data.id
+            )
+            screenshots.append(Screeshot(url=url, path=f"{event.data.id}/{filename}"))
 
         process = await self._repository.get(id=event.data.id)
         process.screenshots = screenshots
@@ -29,9 +32,11 @@ class ScreenshotService:
         await browser.close()
         return screenshot_url
 
-    def _save_screenshot(self, screenshot: bytes, filename: str) -> str:
+    def _save_screenshot(
+        self, screenshot: bytes, filename: str, process_id: str
+    ) -> str:
         storage_client = storage.Client()
         bucket = storage_client.get_bucket("crawling-screenshots")
-        blob = bucket.blob(f"{filename}.png")
+        blob = bucket.blob(f"{process_id}/{filename}")
         blob.upload_from_string(screenshot)
         return blob.public_url
