@@ -20,7 +20,7 @@ class ScreenshotService:
             await page.goto(url)
             screenshot_bytes = await page.screenshot(fullPage=True)
             screenshot_url = self._save_screenshot(screenshot_bytes, url)
-            screenshots.append(Screeshot(url=url, screenshot_url=screenshot_url))
+            screenshots.append(Screeshot(url=url, path=screenshot_url))
 
         process = await self._repository.get(id=event.data.id)
         process.screenshots = screenshots
