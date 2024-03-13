@@ -11,7 +11,7 @@ class ScreenshotService:
         self._repository = repository
 
     async def take_screenshot(self, event: LinksExtractedEvent) -> str:
-        browser = await pyppeteer.launch(headless=True, args=['--no-sandbox'])
+        browser = await pyppeteer.launch(headless=True, args=["--no-sandbox"])
 
         page = await browser.newPage()
         screenshots = []
@@ -19,7 +19,7 @@ class ScreenshotService:
         for url in event.data.urls:
             await page.goto(url)
             screenshot_bytes = await page.screenshot(fullPage=True)
-            screenshot_url = await self._save_screenshot(screenshot_bytes, url)
+            screenshot_url = self._save_screenshot(screenshot_bytes, url)
             screenshots.append(Screeshot(url=url, screenshot_url=screenshot_url))
 
         process = await self._repository.get(id=event.data.id)
