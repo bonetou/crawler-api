@@ -3,6 +3,7 @@ import json
 from fastapi import Depends, APIRouter
 from app.api.deps import create_crawl_service, screenshot_service
 from app.resources.events.created_process_event import CreatedProcessEvent
+from app.resources.events.links_extracted_event import LinksExtractedEvent
 
 from app.services.crawling_service import CrawlingService
 import pydantic
@@ -44,6 +45,6 @@ async def process(
 async def screenshot(
     request: PubSubRequest, service: ScreenshotService = Depends(screenshot_service)
 ):
-    event = request.decode_data()
+    event = LinksExtractedEvent(data=request.decode_data())
     await service.take_screenshot(event=event)
     return {"status": "ok"}
